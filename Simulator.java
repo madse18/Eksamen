@@ -15,7 +15,8 @@ public class Simulator {
 	TOTAL_SIMULATION_TIME = 7,
 	START_PROGRAM = 8,
 	EXIT_PROGRAM = 0;
-	
+	public static EventQueue eventQueue = new EventQueue();
+	public static Population population = new Population(0.003);
 	private static int userInput;
 
 	/*
@@ -35,27 +36,32 @@ public class Simulator {
 		* CityGenerator has a static method called generate()
 		* and it is therefore not neccesary to initialize CityGenerator as an instance.
 		*/
-		EventQueue eventQueue = new EventQueue();
-		Population population = new Population(0.003);
-		
+
+
 
 		/*
 		* Prints out the name of the cities (test).
 		*/
 
-		// for(int i = 0; i < CityGenerator.generate().length; i++){
-		// 	System.out.println(CityGenerator.generate()[i].name());
+		//for(int i = 0; i < CityGenerator.generate().length; i++){
+		//System.out.println(CityGenerator.generate()[i].name());
 		// }
 
 		//population.add(individual = new Individual());
 		//System.out.println(population.size());
-
+		int population1 = 20;
+		int i = 0;
 		do {
-			textMenu();
-			inputMenu();
-			
+			//textMenu();
+			//inputMenu();
+			System.out.println(population1);
+			population1 = population1 + 1;
+			initialPopulation(population1, i);
+
+			if(i == 30)
+			run = false;
 			//!run will only make the program to run once.
-		}while(!run);
+		}while(run);
 	}
 
 	/*
@@ -91,4 +97,12 @@ public class Simulator {
 
 	}
 
+	private static void initialPopulation(int population1, int i){
+		while(i < population1){
+			population.add(new Individual(CityGenerator.generate()));
+			i ++;
+		}
+	}
+	private static void maxPopulation(int population){
+	}
 }
