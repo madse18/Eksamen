@@ -3,23 +3,28 @@ import java.util.*;
 public class Simulator {
 
 	/*
-	* Initializes final variables for the user to choose
+	* Initializes final variables for the user to choose, and the userInput variable.
 	*/
-	private static final int INITIAL_POPULATION_SIZE = 1;
-	private static final int MAXIMUM_POPULATION_SIZE = 2;
-	private static final int MUTATION_INTERVAL = 3;
-	private static final int REPRODUCTION_INTERVAL = 4;
-	private static final int DEATH_INTERVAL = 5;
-	private static final int COMFORT_NORMALIZATION = 6;
-	private static final int TOTAL_SIMULATION_TIME = 7;
-	private static final int START_PROGRAM = 8;
-	private static final int EXIT_PROGRAM = 0;
+
+	private static final int INITIAL_POPULATION_SIZE = 1,
+	MAXIMUM_POPULATION_SIZE = 2,
+	MUTATION_INTERVAL = 3,
+	REPRODUCTION_INTERVAL = 4,
+	DEATH_INTERVAL = 5,
+	COMFORT_NORMALIZATION = 6,
+	TOTAL_SIMULATION_TIME = 7,
+	START_PROGRAM = 8,
+	EXIT_PROGRAM = 0;
+	
+	private static int userInput;
 
 	/*
-	* Initializes scanner which allows the user to interact with the program
+	* Initializes scanner which allows the user to interact with the program.
 	*/
+
 	private static Scanner sc = new Scanner(System.in);
-	private static int userInput;
+
+
 
 	private static boolean run = true;
 
@@ -28,15 +33,16 @@ public class Simulator {
 		/*
 		* Initializes EventQueue and Population instances.
 		* CityGenerator has a static method called generate()
-		* and it is therefore not neccesary to initialize CityGenerator as an instance
+		* and it is therefore not neccesary to initialize CityGenerator as an instance.
 		*/
 		EventQueue eventQueue = new EventQueue();
 		Population population = new Population(0.003);
 		
 
 		/*
-		* Prints out the name of the cities (test)
+		* Prints out the name of the cities (test).
 		*/
+
 		// for(int i = 0; i < CityGenerator.generate().length; i++){
 		// 	System.out.println(CityGenerator.generate()[i].name());
 		// }
@@ -44,22 +50,18 @@ public class Simulator {
 		//population.add(individual = new Individual());
 		//System.out.println(population.size());
 
-
-
-
-
 		do {
 			textMenu();
 			inputMenu();
 			
-			//!run will only make the program to run once
+			//!run will only make the program to run once.
 		}while(!run);
 	}
 
-
 	/*
-	* Prints out a text menu for the user
+	* Prints out a text menu for the user.
 	*/
+
 	private static void textMenu(){
 		System.out.println("__________________________________");
 		System.out.println("");
@@ -81,6 +83,7 @@ public class Simulator {
 	* Allows the user to interact with the program.
 	* The range of the input is 1 - 8 and 0.
 	*/
+
 	private static void inputMenu(){
 		System.out.println("");
 		System.out.println("Enter here: ");
