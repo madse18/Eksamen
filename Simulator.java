@@ -15,7 +15,23 @@ public class Simulator {
 	TOTAL_SIMULATION_TIME = 7,
 	START_PROGRAM = 8,
 	EXIT_PROGRAM = 0;
+
+	/*
+	* Initializes EventQueue and Population instances.
+	* CityGenerator has a static method called generate()
+	* and it is therefore not neccesary to initialize CityGenerator as an instance.
+	*/
 	
+
+	private static EventQueue eventQueue = new EventQueue();
+	private static Population population = new Population(0.001);
+
+	private static int userInput;
+	private static Individual individual;
+	private static int initialPopulationSize = 5000;
+	private static boolean debug = false;
+
+
 	private static int 
 	MUT_INTERVAL,
 	REP_INTERVAL,
@@ -25,6 +41,7 @@ public class Simulator {
 	T_SIM_SIZE,
 	I_POP_SIZE, 
 	MAX_POP_SIZE;
+
 	/*
 	* Initializes scanner which allows the user to interact with the program.
 	*/
@@ -32,8 +49,16 @@ public class Simulator {
 	private static Scanner input = new Scanner(System.in);
 
 	public static void main(String[] args) {
+
+
+
+
 		int userInput;
 
+
+		initialPopulation(initialPopulationSize);
+		cityGenerator();
+		printBestPath();
 		do {
 			defaultSettings();
 			textMenu();
@@ -171,5 +196,62 @@ public class Simulator {
 			*/
 	}
 	
+
+	private static void initialPopulation(int size){
+		int i = 0;
+		int j = 0;
+		while(i < size) {
+			population.add(individual = new Individual(CityGenerator.generate()));
+			for(j = 0; j < CityGenerator.generate().length; j++){
+			System.out.print(individual.path()[j].name());
+		}
+			System.out.println(population.size());
+			i++;
+		}
+	}
+	private static void maxPopulation(int population){
+	}
+
+	/*
+	* Prints the name and the coordinates of the cities. 
+	*/
+
+	private static void cityGenerator(){
+		for(int i = 0; i < CityGenerator.generate().length; i++)
+			System.out.println(CityGenerator.generate()[i].name() + " " + CityGenerator.generate()[i].x() + " " + CityGenerator.generate()[i].y());
+	}
+
+	/*
+	* Prints the best individual's path by city names.
+	*/
+
+	private static void printBestPath(){
+		double total = 0.0;
+		double euclideanDistance = 0.0;
+
+		System.out.print("The best path is: ");
+		for(int i = 0; i < CityGenerator.generate().length; i++) {
+			System.out.print(population.bestPath()[i].name());
+			if(i < (CityGenerator.generate().length-1))
+				System.out.print("; ");
+
+			/* 
+			* The formula for the euclidean distance is being calculated here.
+			* The formula is square root of delta x raised to 2 and delta y raised to 2.
+			* The algoritm will stop, if the it does not find the next x and y in the arraylist.
+			*/ 
+
+			if(i < (CityGenerator.generate().length-1)) {
+				euclideanDistance = Math.sqrt(Math.pow((population.bestPath()[i+1].x() - population.bestPath()[i].x()), 2) + Math.pow((population.bestPath()[i+1].y() - population.bestPath()[i].y()), 2));
+				if(debug)
+					System.out.println("Distance between " + population.bestPath()[i].name() + " and " + population.bestPath()[i+1].name() + " is: " + euclideanDistance);
+				total = total + euclideanDistance;
+			}
+			else if(debug)
+				System.out.println("The system is done calculating.");
+	}
+	System.out.print(" (cost: "+ total + ")");
+}
+
 
 }
