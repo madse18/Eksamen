@@ -16,11 +16,11 @@ public class Simulator {
 	START_PROGRAM = 8,
 	EXIT_PROGRAM = 0;
 	private static EventQueue eventQueue = new EventQueue();
-	private static Population population = new Population(0.003);
+	private static Population population = new Population(0.001);
 	private static int userInput;
+	private static Individual individual;
 
-	private static int initialPopulationSize = 20;
-
+	private static int initialPopulationSize = 5;
 	/*
 	* Initializes scanner which allows the user to interact with the program.
 	*/
@@ -54,9 +54,6 @@ public class Simulator {
 		initialPopulation(initialPopulationSize);
 		cityGenerator();
 		printBestPath();
-
-		// Note to myself. This might generate the best designated path to the cities of the population
-
 
 		do {
 			//textMenu();
@@ -100,8 +97,12 @@ public class Simulator {
 
 	private static void initialPopulation(int size){
 		int i = 0;
+		int j = 0;
 		while(i < size) {
-			population.add(new Individual(CityGenerator.generate()));
+			population.add(individual = new Individual(CityGenerator.generate()));
+			for(j = 0; j < CityGenerator.generate().length; j++){
+			System.out.print(individual.path()[j].name());
+		}
 			System.out.println(population.size());
 			i++;
 		}
@@ -109,14 +110,28 @@ public class Simulator {
 	private static void maxPopulation(int population){
 	}
 
+	/*
+	* Prints the name and the coordinates of the cities. 
+	*/
+
 	private static void cityGenerator(){
 		for(int i = 0; i < CityGenerator.generate().length; i++)
 			System.out.println(CityGenerator.generate()[i].name() + " " + CityGenerator.generate()[i].x() + " " + CityGenerator.generate()[i].y());
 	}
 
+	/*
+	* Prints the best individual's path by city names.
+	*/
+
 	private static void printBestPath(){
 		for(int i = 0; i < CityGenerator.generate().length; i++)
-			System.out.println(population.bestPath()[i].name());
+			System.out.print(population.bestPath()[i].name());
 	}
+
+	//private static void addPopulationAndEvents(){
+	//	eventQueue.add(new Event(MUTATION, 0.5, population.add(new Individual(CityGenerator.generate()))));
+	//	eventQueue.add(new Event(REPRODUCTION, 0.7, population.add(new Individual(CityGenerator.generate()))));
+	//	eventQueue.add(new Event(DEATH, 0.9, population.add(new Individual(CityGenerator.generate()))));
+	//}
 
 }
