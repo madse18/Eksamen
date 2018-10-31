@@ -16,31 +16,19 @@ public class Simulator {
 	START_PROGRAM = 8,
 	EXIT_PROGRAM = 0;
 
-	/*
-	* Initializes EventQueue and Population instances.
-	* CityGenerator has a static method called generate()
-	* and it is therefore not neccesary to initialize CityGenerator as an instance.
-	*/
-	
+	//Still under development
 
-	private static EventQueue eventQueue = new EventQueue();
-	private static Population population = new Population(0.001);
-
-	private static int userInput;
 	private static Individual individual;
-	private static int initialPopulationSize = 5000;
 	private static boolean debug = false;
 
-
-	private static int 
+	private static int I_POP_SIZE, 
+	MAX_POP_SIZE, 
 	MUT_INTERVAL,
 	REP_INTERVAL,
 	D_INTERVAL;
 	
 	private static double COM_NOMRAL,
-	T_SIM_SIZE,
-	I_POP_SIZE, 
-	MAX_POP_SIZE;
+	T_SIM_SIZE;
 
 	/*
 	* Initializes scanner which allows the user to interact with the program.
@@ -48,38 +36,30 @@ public class Simulator {
 
 	private static Scanner input = new Scanner(System.in);
 
+	/*
+	* Initializes EventQueue and Population instances.
+	* CityGenerator has a static method called generate()
+	* and it is therefore not neccesary to initialize CityGenerator as an instance.
+	*/
+
+	private static EventQueue eventQueue = new EventQueue();
+	private static Population population = new Population(0.001);
+
+	private static boolean run = true;
+
+
 	public static void main(String[] args) {
+		
 
-
-
-
-		int userInput;
-
-
-		initialPopulation(initialPopulationSize);
-		cityGenerator();
-		printBestPath();
+		//initialPopulation(initialPopulationSize);
+		//cityGenerator();
+		//printBestPath();
+		defaultSettings();
 		do {
-			defaultSettings();
 			textMenu();
 			System.out.println();
-			System.out.println("Enter your decided option: ");
-			userInput = input.nextInt();
-			if(userInput == START_PROGRAM){
-				//start program
-			}
-			else if(userInput == EXIT_PROGRAM){
-				
-			}
-			
-			else if(1 <= userInput && userInput < 8){
-				inputMenu(userInput);
-			}
-			// will only make the program to run once.
-			else
-				System.out.println("Invalid option!");
-			
-		}while(userInput != EXIT_PROGRAM);
+			inputMenu();
+		}while(run);
 	}
 
 	/*
@@ -92,13 +72,13 @@ public class Simulator {
 		System.out.println("* Would you like to change som of it press enter the number *");
 		System.out.println("*************************************************************");
 		System.out.println();
-		System.out.println(INITIAL_POPULATION_SIZE + ". Initial size of the population");
-		System.out.println(MAXIMUM_POPULATION_SIZE + ". Maximum population size");
-		System.out.println(MUTATION_INTERVAL + ". Mutation interval");
-		System.out.println(REPRODUCTION_INTERVAL + ". Reproduction interval");
-		System.out.println(DEATH_INTERVAL + ". Death interval");
-		System.out.println(TOTAL_SIMULATION_TIME + ". Comfort normalization");
-		System.out.println(TOTAL_SIMULATION_TIME + ". Total simulation time");
+		System.out.println(INITIAL_POPULATION_SIZE + ". Initial size of the population: " + I_POP_SIZE);
+		System.out.println(MAXIMUM_POPULATION_SIZE + ". Maximum population size: " + MAX_POP_SIZE);
+		System.out.println(MUTATION_INTERVAL + ". Mutation interval: " + MUT_INTERVAL);
+		System.out.println(REPRODUCTION_INTERVAL + ". Reproduction interval: " + REP_INTERVAL);
+		System.out.println(DEATH_INTERVAL + ". Death interval: " + D_INTERVAL);
+		System.out.println(COMFORT_NORMALIZATION + ". Comfort normalization: " + COM_NOMRAL);
+		System.out.println(TOTAL_SIMULATION_TIME + ". Total simulation time: " + T_SIM_SIZE);
 		System.out.println("_____________________________________________________________");
 		System.out.println("");
 		System.out.println(START_PROGRAM + ". Start program");
@@ -106,29 +86,62 @@ public class Simulator {
 		System.out.println("_____________________________________________________________");
 	}
 
-	private static void inputMenu(int userInput){
-		while(userInput != START_PROGRAM){
-			System.out.println();
+	private static void inputMenu(){
+		int userInput;
+		System.out.println();
+		do {
 			System.out.println("Enter here what you would like to change it to: ");
 			userInput = input.nextInt();
-			
 			switch(userInput) {
-	    		case INITIAL_POPULATION_SIZE: I_POP_SIZE = input.nextDouble(); break;
-				case MAXIMUM_POPULATION_SIZE: MAX_POP_SIZE = input.nextDouble(); break;
-				case MUTATION_INTERVAL: MUT_INTERVAL = input.nextInt(); break;
-				case REPRODUCTION_INTERVAL: REP_INTERVAL = input.nextInt(); break;
-				case DEATH_INTERVAL: D_INTERVAL = input.nextInt(); break;
-				case COMFORT_NORMALIZATION: COM_NOMRAL = input.nextDouble(); break;
-				case TOTAL_SIMULATION_TIME: T_SIM_SIZE = input.nextDouble(); break;
-				case START_PROGRAM: break;
-
+			   	case INITIAL_POPULATION_SIZE: 
+			   		System.out.println("Population size has been chosen");
+			   		I_POP_SIZE = input.nextInt(); 
+			   		System.out.println("Population size is " + I_POP_SIZE);
+			   	break;
+				case MAXIMUM_POPULATION_SIZE: 
+			   		System.out.println("Maximum population size has been chosen");
+					MAX_POP_SIZE = input.nextInt();
+					System.out.println("Maximum population size is " + MAX_POP_SIZE);
+				break;
+				case MUTATION_INTERVAL: 
+			   		System.out.println("Mutation interval has been chosen");
+					MUT_INTERVAL = input.nextInt(); 
+					System.out.println("Mutation interval is " + MUT_INTERVAL);
+					break;
+				case REPRODUCTION_INTERVAL: 
+			   		System.out.println("Reproduction interval has been chosen");
+					REP_INTERVAL = input.nextInt(); 
+					System.out.println("Reproduction interval " + REP_INTERVAL);
+					break;
+				case DEATH_INTERVAL: 
+			   		System.out.println("Death interval has been chosen");
+					D_INTERVAL = input.nextInt(); 
+					System.out.println("Death interval is " + D_INTERVAL);
+					break;
+				case COMFORT_NORMALIZATION: 
+			   		System.out.println("Comfort normalization has been chosen");
+					COM_NOMRAL = input.nextDouble(); 
+					System.out.println("Comfort normalization is " + COM_NOMRAL);
+					break;
+				case TOTAL_SIMULATION_TIME: 
+			   		System.out.println("Total simulation time has been chosen");
+					T_SIM_SIZE = input.nextDouble(); 
+					System.out.println("Total simulation time is " + T_SIM_SIZE);
+					break;
+				case START_PROGRAM: 
+					if(debug)
+			    		System.out.println("Starting program");
+					break;
+				case EXIT_PROGRAM: 
+					if(debug)
+						System.out.println("Exiting program");
+					System.exit(0);
 				default: System.out.println("Invalid option. Please try again.");
 				System.out.println();
 				break;
 			}
-
-		}		
-	}
+		}while(userInput != START_PROGRAM);
+	}		
 
 	/*
 	* Allows the user to interact with the program.
@@ -145,7 +158,7 @@ public class Simulator {
 		T_SIM_SIZE = 10.0;
 
 		System.out.println("*************************************************************");
-		System.out.println("*The are the default settings                               *");
+		System.out.println("* These are the default settings                            *");
 		System.out.println("*************************************************************");
 		System.out.println("Initial size of the population: " + I_POP_SIZE);
 		System.out.println("Maximum population size: " + MAX_POP_SIZE);
