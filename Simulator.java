@@ -13,22 +13,33 @@ public class Simulator {
 	DEATH_INTERVAL = 5,
 	COMFORT_NORMALIZATION = 6,
 	TOTAL_SIMULATION_TIME = 7,
-	START_PROGRAM = 8,
+	SIMULATION_MODE = 8,
+	START_PROGRAM = 9,
 	EXIT_PROGRAM = 0;
+
+	private static final int T_UNITS_MODE = 1,
+	N_EVENTS_MODE = 2,
+	VERBOSE_MODE = 3,
+	SILENT_MODE = 4;
 
 	//Still under development
 
 	private static Individual individual;
 	private static boolean debug = false;
 
-	private static int I_POP_SIZE, 
-	MAX_POP_SIZE, 
-	MUT_INTERVAL,
-	REP_INTERVAL,
-	D_INTERVAL;
-	
-	private static double COM_NOMRAL,
-	T_SIM_SIZE;
+	/*
+	* Initialises the default values.
+	*/
+
+	private static int I_POP_SIZE = 20, 
+	MAX_POP_SIZE = 200, 
+	MUT_INTERVAL = 3,
+	REP_INTERVAL = 15,
+	D_INTERVAL = 30,
+	SIM_MODE = 1;
+
+	private static double COM_NOMRAL = 0.001,
+	T_SIM_SIZE = 10.0;
 
 	/*
 	* Initializes scanner which allows the user to interact with the program.
@@ -79,8 +90,9 @@ public class Simulator {
 		System.out.println(DEATH_INTERVAL + ". Death interval: " + D_INTERVAL);
 		System.out.println(COMFORT_NORMALIZATION + ". Comfort normalization: " + COM_NOMRAL);
 		System.out.println(TOTAL_SIMULATION_TIME + ". Total simulation time: " + T_SIM_SIZE);
+		System.out.println(SIMULATION_MODE + ". Simulation mode: " + SIM_MODE);
 		System.out.println("_____________________________________________________________");
-		System.out.println("");
+		System.out.println();
 		System.out.println(START_PROGRAM + ". Start program");
 		System.out.println(EXIT_PROGRAM + ". Quit program");
 		System.out.println("_____________________________________________________________");
@@ -90,7 +102,7 @@ public class Simulator {
 		int userInput;
 		System.out.println();
 		do {
-			System.out.println("Enter here what you would like to change it to: ");
+			System.out.println("Select the options here: ");
 			userInput = input.nextInt();
 			switch(userInput) {
 			   	case INITIAL_POPULATION_SIZE: 
@@ -128,6 +140,10 @@ public class Simulator {
 					T_SIM_SIZE = input.nextDouble(); 
 					System.out.println("Total simulation time is " + T_SIM_SIZE);
 					break;
+				case SIMULATION_MODE:
+					System.out.print("Simulation mode (1: every t units; 2: every n events; 3: verbose; 4: silent): ");
+					SIM_MODE = input.nextInt();
+					System.out.println("Simulation mode is " + SIM_MODE);
 				case START_PROGRAM: 
 					if(debug)
 			    		System.out.println("Starting program");
@@ -136,8 +152,9 @@ public class Simulator {
 					if(debug)
 						System.out.println("Exiting program");
 					System.exit(0);
-				default: System.out.println("Invalid option. Please try again.");
-				System.out.println();
+				default: 
+					System.out.println("Invalid option. Please try again.");
+					System.out.println();
 				break;
 			}
 		}while(userInput != START_PROGRAM);
@@ -149,14 +166,6 @@ public class Simulator {
 	*/
 
 	private static void defaultSettings(){
-		I_POP_SIZE = 20;
-		MAX_POP_SIZE = 200; 
-		MUT_INTERVAL = 3;
-		REP_INTERVAL = 15;
-		D_INTERVAL = 30;
-		COM_NOMRAL = 0.001;
-		T_SIM_SIZE = 10.0;
-
 		System.out.println("*************************************************************");
 		System.out.println("* These are the default settings                            *");
 		System.out.println("*************************************************************");
@@ -167,6 +176,7 @@ public class Simulator {
 		System.out.println("Death interval: " + D_INTERVAL);
 		System.out.println("Comfort normalization: " + COM_NOMRAL);
 		System.out.println("Total simulation time: " + T_SIM_SIZE);
+		System.out.println("Simulation mode: " + SIM_MODE);
 		System.out.println();
 
 	}
