@@ -33,7 +33,7 @@ public class Simulator {
 	D_INTERVAL = 30,
 	SIM_MODE = 1;
 
-	private static double COM_NOMRAL = 0.001,
+	private static double COM_NORMAL = 0.001,
 	T_SIM_SIZE = 10.0;
 
 
@@ -41,10 +41,11 @@ public class Simulator {
 
 	private static Scanner input = new Scanner(System.in);
 
-	//Initializes EventQueue and Population instances.
+	//Initializes EventQueue, Population and City[] instances.
 
 	private static EventQueue eventQueue = new EventQueue();
-	private static Population population = new Population(0.001);
+	private static Population population = new Population(COM_NORMAL);
+	private static City[] cities;
 
 	private static boolean run = true;
 
@@ -52,9 +53,8 @@ public class Simulator {
 		defaultSettings();
 		do {
 			textMenu();
-			System.out.println();
 			inputMenu();
-			if(I_POP_SIZE != 20)
+			listOfCities();
 			for(int i = 0; i < I_POP_SIZE; i++){
 				individuals(eventQueue, population);
 			}
@@ -96,7 +96,7 @@ public class Simulator {
 		System.out.println(MUTATION_INTERVAL + ". Mutation interval: " + MUT_INTERVAL);
 		System.out.println(REPRODUCTION_INTERVAL + ". Reproduction interval: " + REP_INTERVAL);
 		System.out.println(DEATH_INTERVAL + ". Death interval: " + D_INTERVAL);
-		System.out.println(COMFORT_NORMALIZATION + ". Comfort normalization: " + COM_NOMRAL);
+		System.out.println(COMFORT_NORMALIZATION + ". Comfort normalization: " + COM_NORMAL);
 		System.out.println(TOTAL_SIMULATION_TIME + ". Total simulation time: " + T_SIM_SIZE);
 		System.out.println(SIMULATION_MODE + ". Simulation mode: " + SIM_MODE);
 		System.out.println("_____________________________________________________________");
@@ -104,6 +104,7 @@ public class Simulator {
 		System.out.println(START_PROGRAM + ". Start program");
 		System.out.println(EXIT_PROGRAM + ". Quit program");
 		System.out.println("_____________________________________________________________");
+		System.out.println();
 	}
 
 	/*
@@ -145,8 +146,8 @@ public class Simulator {
 					break;
 				case COMFORT_NORMALIZATION:
 			   		System.out.println("Comfort normalization has been chosen");
-					COM_NOMRAL = input.nextDouble();
-					System.out.println("Comfort normalization is " + COM_NOMRAL);
+					COM_NORMAL = input.nextDouble();
+					System.out.println("Comfort normalization is " + COM_NORMAL);
 					break;
 				case TOTAL_SIMULATION_TIME:
 			   		System.out.println("Total simulation time has been chosen");
@@ -186,7 +187,7 @@ public class Simulator {
 		System.out.println("Mutation interval: " + MUT_INTERVAL);
 		System.out.println("Reproduction interval: " + REP_INTERVAL);
 		System.out.println("Death interval: " + D_INTERVAL);
-		System.out.println("Comfort normalization: " + COM_NOMRAL);
+		System.out.println("Comfort normalization: " + COM_NORMAL);
 		System.out.println("Total simulation time: " + T_SIM_SIZE);
 		System.out.println("Simulation mode: " + SIM_MODE);
 		System.out.println();
@@ -194,7 +195,17 @@ public class Simulator {
 	}
 
 	/*
-	* Prints the best individual's path by city names.
+	* Returns the list of cities.
+	*/
+
+	private static City[] listOfCities(){
+		cities = CityGenerator.generate();
+	
+		return cities;
+	}
+
+	/*
+	* Prints the best individual's path by city names and total cost.
 	*/
 
 	private static void printBestPath(){
@@ -204,10 +215,12 @@ public class Simulator {
 
 		System.out.print("The best path is: ");
 
-		//Prints out all the city names by the best path.
-		for(int i = 0; i < CityGenerator.generate().length; i++) {
+		//Prints out all the city names by the individual's best path.
+		for(int i = 0; i < population.bestPath().length; i++) {
 			System.out.print(population.bestPath()[i].name());
-			if(i < (CityGenerator.generate().length-1))
+
+			//Seperates the name of the cities by '; ' as long as it is not the last city in the list
+			if(i < (population.bestPath().length-1))
 				System.out.print("; ");
 
 			/*
@@ -215,7 +228,7 @@ public class Simulator {
 			* The formula is square root of delta x raised to 2 and delta y raised to 2.
 			*/
 
-			if(i < (CityGenerator.generate().length-1)) {
+			if(i < (population.bestPath().length-1)) {
 
 				//Defines delta x and delta y.
 				double deltaX = (population.bestPath()[i+1].x() - population.bestPath()[i].x());
@@ -232,13 +245,12 @@ public class Simulator {
 			else if(debug)
 				System.out.println("The system is done calculating.");
 		}
-		System.out.print(" (cost: "+ total + ")");
+		System.out.println(" (cost: "+ total + ")");
 	}
 
 	public static void individuals(EventQueue eventQueue, Population population){
 		//Creates a new individual and places him in population.
-		City[] city = CityGenerator.generate();
-		Individual individual = new Individual(city);
+		Individual individual = new Individual(cities);
 		population.add(individual);
 
 		//Defines the probability of events.
