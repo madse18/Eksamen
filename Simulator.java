@@ -46,7 +46,7 @@ public class Simulator {
 	private static EventQueue eventQueue = new EventQueue();
 	private static Population population = new Population(COM_NORMAL);
 	private static City[] cities;
-
+	private static Individual individual;
 	private static boolean run = true;
 
 	public static void main(String[] args) {
@@ -205,7 +205,7 @@ public class Simulator {
 	}
 
 	/*
-	* Prints the best individual's path by city names and total cost.
+	* Prints the best individual's path by city names and total cost in euclidean distance.
 	*/
 
 	private static void printBestPath(){
@@ -219,7 +219,7 @@ public class Simulator {
 		for(int i = 0; i < population.bestPath().length; i++) {
 			System.out.print(population.bestPath()[i].name());
 
-			//Seperates the name of the cities by '; ' as long as it is not the last city in the list
+			//Seperates the name of the cities by '; ' as long as it is not the last city in the list.
 			if(i < (population.bestPath().length-1))
 				System.out.print("; ");
 
@@ -228,6 +228,7 @@ public class Simulator {
 			* The formula is square root of delta x raised to 2 and delta y raised to 2.
 			*/
 
+			//Checks if the individual still has to visit another city on his list except for his starting city.
 			if(i < (population.bestPath().length-1)) {
 
 				//Defines delta x and delta y.
@@ -237,8 +238,27 @@ public class Simulator {
 				//Formula for the euclidean distance is executed here.
 				euclideanDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-				if(debug)
+				if(debug) {
+					System.out.println();
 					System.out.println("Distance between " + population.bestPath()[i].name() + " and " + population.bestPath()[i+1].name() + " is: " + euclideanDistance);
+				}
+
+				total = total + euclideanDistance;
+			}
+			//Checks if the individual has reached to all the cities on his list except for his starting city.
+			else if(i < (population.bestPath().length)) {
+
+				//Defines delta x and delta y of his first and last city.
+				double deltaX = (population.bestPath()[0].x() - population.bestPath()[i].x());
+				double deltaY = (population.bestPath()[0].y() - population.bestPath()[i].y());
+
+				//Formula for the euclidean distance is executed here.
+				euclideanDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+				
+				if(debug) {
+					System.out.println();
+					System.out.println("Distance between " + population.bestPath()[i].name() + " and " + population.bestPath()[0].name() + " is: " + euclideanDistance);
+				}
 
 				total = total + euclideanDistance;
 			}
@@ -250,7 +270,7 @@ public class Simulator {
 
 	public static void individuals(EventQueue eventQueue, Population population){
 		//Creates a new individual and places him in population.
-		Individual individual = new Individual(cities);
+		individual = new Individual(cities);
 		population.add(individual);
 
 		//Defines the probability of events.
@@ -270,7 +290,7 @@ public class Simulator {
 		eventQueue.add(eventMutation);
 		eventQueue.add(eventReproduction);
 		eventQueue.add(eventDeath);
-
+		/*
 		System.out.println("Dette er mutation probability " + mut);
 		System.out.println(fit);
 		System.out.println(I_POP_SIZE);
@@ -278,5 +298,11 @@ public class Simulator {
 		System.out.println(MAX_POP_SIZE);
 		System.out.println("Dette er Reproduction probability " + rep);
 		System.out.println("Dette er death probability " + dead + '\n');
+		*/
+		for(int i = 0; i < cities.length; i++) {
+			System.out.print(individual.path()[i].name());
+		}
+		System.out.println();
+		System.out.println(individual.cost());
 	}
 }
