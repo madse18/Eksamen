@@ -50,8 +50,9 @@ public class Simulator {
 	private static boolean run = true;
 
 	public static void main(String[] args) {
-		defaultSettings();
+		
 		do {
+			defaultSettings();
 			textMenu();
 			inputMenu();
 			listOfCities();
@@ -59,6 +60,7 @@ public class Simulator {
 				individuals(eventQueue, population);
 			}
 		}while(!run);
+		
 			//time mode
 			if(SIM_MODE == 1){
 				System.out.println("Hej 1");
@@ -86,10 +88,12 @@ public class Simulator {
 	*/
 
 	private static void textMenu(){
-		System.out.println("*************************************************************");
-		System.out.println("* AVAILABLE OPTIONS                                         *");
-		System.out.println("* Would you like to change som of it press enter the number *");
-		System.out.println("*************************************************************");
+		System.out.println("********************************************************************");
+		System.out.println("* These are the current settings                                   *");
+		System.out.println("*                                                                  *");
+		System.out.println("* AVAILABLE OPTIONS                                                *");
+		System.out.println("* If you would you like to change som of it press enter the number *");
+		System.out.println("********************************************************************");
 		System.out.println();
 		System.out.println(INITIAL_POPULATION_SIZE + ". Initial size of the population: " + I_POP_SIZE);
 		System.out.println(MAXIMUM_POPULATION_SIZE + ". Maximum population size: " + MAX_POP_SIZE);
@@ -174,25 +178,6 @@ public class Simulator {
 		}while(userInput != START_PROGRAM);
 	}
 
-	/*
-	* Prints out the default settings.
-	*/
-
-	private static void defaultSettings(){
-		System.out.println("*************************************************************");
-		System.out.println("* These are the default settings                            *");
-		System.out.println("*************************************************************");
-		System.out.println("Initial size of the population: " + I_POP_SIZE);
-		System.out.println("Maximum population size: " + MAX_POP_SIZE);
-		System.out.println("Mutation interval: " + MUT_INTERVAL);
-		System.out.println("Reproduction interval: " + REP_INTERVAL);
-		System.out.println("Death interval: " + D_INTERVAL);
-		System.out.println("Comfort normalization: " + COM_NORMAL);
-		System.out.println("Total simulation time: " + T_SIM_SIZE);
-		System.out.println("Simulation mode: " + SIM_MODE);
-		System.out.println();
-
-	}
 
 	/*
 	* Returns the list of cities.
