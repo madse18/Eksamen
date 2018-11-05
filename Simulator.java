@@ -61,7 +61,7 @@ public class Simulator {
 		}while(!run);
 			//time mode
 			if(SIM_MODE == 1){
-				System.out.println("Hej 1");
+				time();
 			}
 			//Every n events
 			else if(SIM_MODE == 2){
@@ -305,4 +305,39 @@ public class Simulator {
 		System.out.println();
 		System.out.println(individual.cost());
 	}
+
+	public static void time(){
+		double startTime = System.currentTimeMillis();
+		double currentTime = (System.currentTimeMillis() - startTime)/1000;
+		boolean currentTimeAtInterval = false;
+
+
+		//Scanner sc = new Scanner(System.in);
+		//long input = sc.nextLong();
+
+		//System.out.println(input);
+
+		while (currentTime < T_SIM_SIZE){
+			currentTime = (System.currentTimeMillis() - startTime)/1000;
+			System.out.println(currentTime);
+			if(INTERVAL_OBS <= currentTime && !currentTimeAtInterval){
+				System.out.println("Success");
+				currentTimeAtInterval = true;
+			}
+		}
+
+		System.out.println("Out of loop");
+	}
+
+	public static void iteration(){
+		Scanner sc = new Scanner(System.in);
+		int input = sc.nextInt();
+		int i = 0;
+
+		while (i <= input){
+			System.out.println("in loop");
+			i++;
+		}
+	}
 }
+
