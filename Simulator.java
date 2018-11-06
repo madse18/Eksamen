@@ -31,7 +31,8 @@ public class Simulator {
 	MUT_INTERVAL = 3,
 	REP_INTERVAL = 15,
 	D_INTERVAL = 30,
-	SIM_MODE = 1;
+	SIM_MODE = 1,
+	INTERVAL_OBS = 3;
 
 	private static double COM_NORMAL = 0.001,
 	T_SIM_SIZE = 10.0;
@@ -309,22 +310,28 @@ public class Simulator {
 	public static void time(){
 		double startTime = System.currentTimeMillis();
 		double currentTime = (System.currentTimeMillis() - startTime)/1000;
-		boolean currentTimeAtInterval = false;
+
+		double newInterval = 0;
+		newInterval = newInterval + (double) INTERVAL_OBS;
+
+		System.out.println(T_SIM_SIZE);
+
+		while ((currentTime <= T_SIM_SIZE)) {
 
 
-		//Scanner sc = new Scanner(System.in);
-		//long input = sc.nextLong();
+			System.out.println("newInterval: " + newInterval);
 
-		//System.out.println(input);
+			while ((currentTime <= T_SIM_SIZE)) {
+				currentTime = (System.currentTimeMillis() - startTime)/1000;
 
-		while (currentTime < T_SIM_SIZE){
-			currentTime = (System.currentTimeMillis() - startTime)/1000;
-			System.out.println(currentTime);
-			if(INTERVAL_OBS <= currentTime && !currentTimeAtInterval){
-				System.out.println("Success");
-				currentTimeAtInterval = true;
+				if(newInterval <= currentTime){
+					System.out.println("currentTime: " + currentTime);
+					newInterval = newInterval + (double) INTERVAL_OBS;
+				}
 			}
 		}
+
+
 
 		System.out.println("Out of loop");
 	}
