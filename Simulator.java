@@ -47,8 +47,6 @@ public class Simulator {
     private static boolean run = true;
     private static Event event;
 
-    private static int numberOfEventsTest = 0;
-
     public static void main(String[] args) {
         textMenu();
         inputMenu();
@@ -88,8 +86,10 @@ public class Simulator {
                 else if (event.type() == 'd')
                         deathEvent();
                 
-                if (population.size() > MAX_POP_SIZE)
+                if (population.size() > MAX_POP_SIZE) {
+                	eventsSimulated++;
                     population.epidemic();
+                }
 
                 if (event.time() >= newInterval) {
                     newInterval = INTERVAL_OBS + newInterval;
@@ -122,8 +122,10 @@ public class Simulator {
       			 else if (event.type() == 'd') 
           				deathEvent();
       			 
-      			if (population.size() > MAX_POP_SIZE)
+      			if (population.size() > MAX_POP_SIZE) {
+      				eventsSimulated++;
         			population.epidemic();
+      			}
 
     			if (eventsSimulated >= newInterval) {
 					newInterval = INTERVAL_OBS + newInterval;
@@ -160,8 +162,10 @@ public class Simulator {
             }
             event = eventQueue.next();
 
-            if (population.size() > MAX_POP_SIZE)
+            if (population.size() > MAX_POP_SIZE) {
+            	eventsSimulated++;
                 population.epidemic();
+            }
         }
         printBestPath();
     }
@@ -182,8 +186,10 @@ public class Simulator {
                         deathEvent();
                 
                 event = eventQueue.next();
-                if (population.size() > MAX_POP_SIZE) 
+                if (population.size() > MAX_POP_SIZE) {
+                	eventsSimulated++;
                     population.epidemic();
+                }
                 
             }
         }
@@ -208,7 +214,6 @@ public class Simulator {
             System.out.println(Math.pow(1 - population.fitness(event.individual()), 2));
         }
         if (RandomUtils.getRandomEvent(Math.pow(1 - population.fitness(event.individual()), 2))) {
-
             event.individual().mutate();
             if (debug) {
                 System.out.println("Mutation 1");
@@ -217,6 +222,7 @@ public class Simulator {
             hasMutated = true;
 
             if (RandomUtils.getRandomEvent(0.3)) {
+				eventsSimulated++;
                 event.individual().mutate();
                 if (debug) {
                     System.out.println("Mutation 2");
@@ -224,6 +230,7 @@ public class Simulator {
                 }
 
                 if (RandomUtils.getRandomEvent(0.15)) {
+                	eventsSimulated++;
                     event.individual().mutate();
                     if (debug) {
                         System.out.println("Mutation 3");
@@ -237,10 +244,10 @@ public class Simulator {
 
         if (hasMutated) {
             eventQueue.add(eventMutation);
-            numberOfEventsTest++;
+            
         } else {
             eventQueue.add(eventMutation2);
-            numberOfEventsTest++;
+            
         }
     }
 
@@ -271,7 +278,6 @@ public class Simulator {
         eventQueue.add(newEventReproduction);
         eventQueue.add(newEventMutation);
 
-        numberOfEventsTest = numberOfEventsTest + 4;
 
         population.add(reproducedIndividual);
         if (debug) {
@@ -298,7 +304,7 @@ public class Simulator {
 
             Event newEventDeath = new Event('d', event.time() + (1 - Math.log(1 - population.fitness(event.individual())) * D_INTERVAL), event.individual());
             eventQueue.add(newEventDeath);
-            numberOfEventsTest++;
+            
         }
     }
 
@@ -474,6 +480,5 @@ public class Simulator {
         eventQueue.add(eventMutation);
         eventQueue.add(eventReproduction);
         eventQueue.add(eventDeath);
-        numberOfEventsTest = numberOfEventsTest + 3;
     }
 }
