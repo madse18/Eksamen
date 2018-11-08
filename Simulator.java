@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Simulator {
 
-    //Initializes final variables used for the inputMenu method
+    //Initializes final variables used for the inputMenu method.
     private static final int INITIAL_POPULATION_SIZE = 1,
             MAXIMUM_POPULATION_SIZE = 2,
             MUTATION_INTERVAL = 3,
@@ -47,6 +47,8 @@ public class Simulator {
     private static boolean run = true;
     private static Event event;
 
+    private static int numberOfEventsTest = 0;
+
     public static void main(String[] args) {
         textMenu();
         inputMenu();
@@ -58,7 +60,7 @@ public class Simulator {
         	timeMode();
 		}
         else if (SIM_MODE == 2) {
-        	System.out.println("Hej 2");
+        	nEventsMode();
 		}
         else if (SIM_MODE == 3) {
         	verboseMode();
@@ -70,29 +72,25 @@ public class Simulator {
 
     /*
     * Simulates the population.
-    * Prints out current time, events simulated, population size, best city path per interval.
+    * Prints out current time, events simulated, population size, best city path per interval in time.
     */
-    private static void timeMode(){
+    private static void timeMode() {
 		int newInterval = INTERVAL_OBS;
 		event = eventQueue.next();
 		while (event.time() <= T_SIM_SIZE) {
-			if (eventQueue.hasNext()) {
-		        if (event.type() == 'm') {
-	                if (population.contains(event.individual())) {
+			if (eventQueue.hasNext() && population.contains(event.individual())) {
+		        if (event.type() == 'm') 
                         mutationEvent();
-                    }
-                } else if (event.type() == 'r') {
-					if (population.contains(event.individual())) {
+
+                else if (event.type() == 'r') 
                         reproductionEvent();
-                    }
-                } else if (event.type() == 'd') {
-                    if (population.contains(event.individual())) {
+
+                else if (event.type() == 'd')
                         deathEvent();
-                    }
-                }
-                if (population.size() > MAX_POP_SIZE) {
+                
+                if (population.size() > MAX_POP_SIZE)
                     population.epidemic();
-                }
+
                 if (event.time() >= newInterval) {
                     newInterval = INTERVAL_OBS + newInterval;
                     System.out.println("Current time: " + event.time());
@@ -103,40 +101,67 @@ public class Simulator {
             }
             event = eventQueue.next();
         }
+        printBestPath();
     }
 
     /*
     * Simulates the population.
-    * Prints out every simulated events and in the end the best city path
+    * Prints out current time, events simulated, population size, best city path per interval in number of events simulated.
+    */
+	private static void nEventsMode() {
+		int newInterval = INTERVAL_OBS;
+  		event = eventQueue.next();
+		while(event.time() <= T_SIM_SIZE) {
+    		if (eventQueue.hasNext() && population.contains(event.individual())) {
+    			if (event.type() == 'm') 
+        				mutationEvent();
+        			
+      			 else if (event.type() == 'r') 
+          				reproductionEvent();
+          		
+      			 else if (event.type() == 'd') 
+          				deathEvent();
+      			 
+      			if (population.size() > MAX_POP_SIZE)
+        			population.epidemic();
+
+    			if (eventsSimulated >= newInterval) {
+					newInterval = INTERVAL_OBS + newInterval;
+        			System.out.println("Current time: " + event.time());
+        			System.out.println("Events simulated: " + eventsSimulated);
+        			System.out.println("Population size: " + population.size());
+        			printBestPath();
+        		}
+			}
+			event = eventQueue.next();
+		}	
+		printBestPath();
+	}
+
+    /*
+    * Simulates the population.
+    * Prints out every simulated events and in the end the best city path.
     */
     private static void verboseMode() {
         event = eventQueue.next();
 
         while (event.time() <= T_SIM_SIZE) {
-            if (eventQueue.hasNext()) {
+            if (eventQueue.hasNext() && population.contains(event.individual())) {
                 if (event.type() == 'm') {
-                    if (population.contains(event.individual())) {
                         System.out.println(event);
                         mutationEvent();
-                    }
                 } else if (event.type() == 'r') {
-                    if (population.contains(event.individual())) {
                         System.out.println(event);
                         reproductionEvent();
-                    }
                 } else if (event.type() == 'd') {
-                    if (population.contains(event.individual())) {
                         System.out.println(event);
                         deathEvent();
-                    }
                 }
             }
-
             event = eventQueue.next();
 
-            if (population.size() > MAX_POP_SIZE) {
+            if (population.size() > MAX_POP_SIZE)
                 population.epidemic();
-            }
         }
         printBestPath();
     }
@@ -148,40 +173,33 @@ public class Simulator {
         event = eventQueue.next();
 
         while (event.time() <= T_SIM_SIZE) {
-            if (eventQueue.hasNext()) {
-                if (event.type() == 'm') {
-                    if (population.contains(event.individual())) {
-                        eventsSimulated++;
+            if (eventQueue.hasNext() && population.contains(event.individual())) {
+                if (event.type() == 'm') 
                         mutationEvent();
-                    }
-                } else if (event.type() == 'r') {
-                    if (population.contains(event.individual())) {
-                        eventsSimulated++;
+                else if (event.type() == 'r') 
                         reproductionEvent();
-                    }
-                } else if (event.type() == 'd') {
-                    if (population.contains(event.individual())) {
-                        eventsSimulated++;
+                else if (event.type() == 'd') 
                         deathEvent();
-                    }
-                }
+                
                 event = eventQueue.next();
-                if (population.size() > MAX_POP_SIZE) {
+                if (population.size() > MAX_POP_SIZE) 
                     population.epidemic();
-                }
+                
             }
         }
         printBestPath();
     }
 
     /*
-	 * Runs the mutation event
+	 * Runs the mutation event.
      */
     private static void mutationEvent() {
         eventsSimulated++;
         boolean hasMutated = false;
+        double mut = event.time() + RandomUtils.getRandomTime((1 - Math.log(population.fitness(event.individual())) * MUT_INTERVAL));
         double mut2 = event.time() + RandomUtils.getRandomTime((1 - Math.log(population.fitness(event.individual())) * MUT_INTERVAL / 10.0));
-        Event eventMutation = new Event('m', event.time() + RandomUtils.getRandomTime((1 - Math.log(population.fitness(event.individual())) * MUT_INTERVAL)), event.individual());
+
+        Event eventMutation = new Event('m', mut, event.individual());
         Event eventMutation2 = new Event('m', mut2, event.individual());
 
         if (debug) {
@@ -219,13 +237,15 @@ public class Simulator {
 
         if (hasMutated) {
             eventQueue.add(eventMutation);
+            numberOfEventsTest++;
         } else {
             eventQueue.add(eventMutation2);
+            numberOfEventsTest++;
         }
     }
 
     /*
-	 * Runs the reproduction event
+	 * Runs the reproduction event.
      */
     private static void reproductionEvent() {
         eventsSimulated++;
@@ -233,9 +253,7 @@ public class Simulator {
 
         double fitCal = 1 - Math.log(population.fitness(event.individual()));
 
-        //double mut = RandomUtils.getRandomTime(fitCal * MUT_INTERVAL);
         double rep = event.time() + RandomUtils.getRandomTime(fitCal * I_POP_SIZE / MAX_POP_SIZE * REP_INTERVAL);
-        //double dead = RandomUtils.getRandomTime(fitCal * D_INTERVAL);
 
         Event eventReproduction = new Event('r', rep, event.individual());
 
@@ -253,6 +271,8 @@ public class Simulator {
         eventQueue.add(newEventReproduction);
         eventQueue.add(newEventMutation);
 
+        numberOfEventsTest = numberOfEventsTest + 4;
+
         population.add(reproducedIndividual);
         if (debug) {
             System.out.println("Individual reproduced fitness: " + fitCal);
@@ -261,7 +281,7 @@ public class Simulator {
     }
 
     /*
-	 * Runs the death event
+	 * Runs the death event.
      */
     private static void deathEvent() {
         eventsSimulated++;
@@ -278,6 +298,7 @@ public class Simulator {
 
             Event newEventDeath = new Event('d', event.time() + (1 - Math.log(1 - population.fitness(event.individual())) * D_INTERVAL), event.individual());
             eventQueue.add(newEventDeath);
+            numberOfEventsTest++;
         }
     }
 
@@ -431,8 +452,9 @@ public class Simulator {
         }
         System.out.println(" (cost: " + total + ")");
     }
+
     /*
-     * Creates individuals to the population and adds mutation, reproduction and death events affected by the new individual to the event queue
+     * Creates individuals to the population and adds mutation, reproduction and death events affected by the new individual to the event queue.
      */
     public static void individuals(EventQueue eventQueue, Population population) {
         Individual individual = new Individual(cities);
@@ -448,8 +470,10 @@ public class Simulator {
         Event eventReproduction = new Event('r', rep, individual);
         Event eventDeath = new Event('d', dead, individual);
 
+
         eventQueue.add(eventMutation);
         eventQueue.add(eventReproduction);
         eventQueue.add(eventDeath);
+        numberOfEventsTest = numberOfEventsTest + 3;
     }
 }
