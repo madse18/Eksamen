@@ -35,9 +35,9 @@ public class Simulator {
     private static Event event;
 
     /*
-    *Runs a input menu for the user, and stores the input in the class variables 
-    *for the other methods to use.
-    */
+     * Runs a input menu for the user, and stores the input in the class variables 
+     * for the other methods to use.
+     */
     private static void inputMenu(){
     	System.out.println("Enter the following information: ");
     	System.out.println("Size of the initial population: ");
@@ -56,15 +56,16 @@ public class Simulator {
     	timeSimSize = input.nextInt();
     	System.out.println("Simulation mode: 1, every t units; 2, every n event; 3, verbose; 4, silent");
     	simMode = input.nextInt();
-    	System.out.println("Enter the time between observations: ");
-    	intervalObs = input.nextInt();
-
+    	if (simMode == 1 || simMode == 2) {
+    		System.out.println("Enter the time between observations: ");
+    		intervalObs = input.nextInt();
+    	}
     }
 
     /*
-    * Simulates the population.
-    * Prints out current time, events simulated, population size, best city path per interval in time.
-    */
+     * Simulates the population.
+     * Prints out current time, events simulated, population size, best city path per interval in time.
+     */
     private static void timeMode() {
 		int newInterval = intervalObs;
 		event = eventQueue.next();
@@ -90,6 +91,7 @@ public class Simulator {
                     System.out.println("Events simulated: " + eventsSimulated);
                     System.out.println("Population size: " + population.size());
                     printBestPath();
+                    System.out.println();
                 }
             }
             event = eventQueue.next();
@@ -98,9 +100,9 @@ public class Simulator {
     }
 
     /*
-    * Simulates the population.
-    * Prints out current time, events simulated, population size, best city path per interval in number of events simulated.
-    */
+     * Simulates the population.
+     * Prints out current time, events simulated, population size, best city path per interval in number of events simulated.
+     */
 	private static void nEventsMode() {
 		int newInterval = intervalObs;
   		event = eventQueue.next();
@@ -126,6 +128,7 @@ public class Simulator {
         			System.out.println("Events simulated: " + eventsSimulated);
         			System.out.println("Population size: " + population.size());
         			printBestPath();
+        			System.out.println();
         		}
 			}
 			event = eventQueue.next();
@@ -134,9 +137,9 @@ public class Simulator {
 	}
 
     /*
-    * Simulates the population.
-    * Prints out every simulated events and in the end the best city path.
-    */
+     * Simulates the population.
+     * Prints out every simulated events and in the end the best city path.
+     */
     private static void verboseMode() {
         event = eventQueue.next();
         while (event.time() <= timeSimSize) {
@@ -165,8 +168,8 @@ public class Simulator {
     }
 
     /*
-    * Simulates the population. Prints best city path when simulation ends.
-    */
+     * Simulates the population. Prints best city path when simulation ends.
+     */
     private static void silentMode() {
         event = eventQueue.next();
 
@@ -187,15 +190,14 @@ public class Simulator {
                 	eventsSimulated++;
                     population.epidemic();
                 }
-                
             }
         }
         printBestPath();
     }
 
     /*
-    * Returns the list of cities.
-    */
+     * Returns the list of cities.
+     */
     private static City[] listOfCities() {
         cities = CityGenerator.generate();
 
@@ -224,8 +226,10 @@ public class Simulator {
         eventQueue.add(eventReproduction);
         eventQueue.add(eventDeath);
     }
+
     /*
-	 * Runs the mutation event.
+	 * Runs the mutation event. If the individual mutates, add the event to the event queue.
+	 * Otherwise add an event of which average time is divided by ten.
      */
     private static void mutationEvent() {
         eventsSimulated++;
@@ -280,7 +284,10 @@ public class Simulator {
     }
 
     /*
-	 * Runs the reproduction event.
+	 * Runs the reproduction event. 
+	 * Adds a reproduction event in the event queue affecting the reproduced individual.
+	 * Adds mutation, reproduction and death events in the event queue
+	 * affecting the new individual in the population.
      */
     private static void reproductionEvent() {
         eventsSimulated++;
@@ -314,7 +321,9 @@ public class Simulator {
     }
 
     /*
-	 * Runs the death event.
+	 * Runs the death event. If the individual survives, another death event affecting
+	 * the individual will be added to the event queue. Otherwise remove the individual
+	 * from the population.
      */
     private static void deathEvent() {
         eventsSimulated++;
