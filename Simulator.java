@@ -8,9 +8,6 @@ public class Simulator {
             verbose = 3,
             silent = 4;
 
-    //Used for developers only. Will print out extra details for debugging.
-    private static boolean debug = false;
-
     //Initialises variables for all the inputs and a variable for events simulated.
     private static int iPopSize,
             maxPopSize,
@@ -27,17 +24,16 @@ public class Simulator {
     //Initializes scanner which allows the user to interact with the program.
     private static Scanner input = new Scanner(System.in);
 
-    //Initializes EventQueue, Population and City[] instances.
+    //Initializes EventQueue, Population, City[] and event instances.
     private static EventQueue eventQueue = new EventQueue();
     private static Population population = new Population(omega);
     private static City[] cities;
-    private static boolean run = true;
     private static Event event;
 
     /*
-    *Runs a input menu for the user, and stores the input in the class variables 
-    *for the other methods to use.
-    */
+     * Runs a input menu for the user, and stores the input in the class variables 
+     * for the other methods to use.
+     */
     private static void inputMenu(){
     	System.out.println("Enter the following information: ");
     	System.out.println("Size of the initial population: ");
@@ -56,15 +52,16 @@ public class Simulator {
     	timeSimSize = input.nextInt();
     	System.out.println("Simulation mode: 1, every t units; 2, every n event; 3, verbose; 4, silent");
     	simMode = input.nextInt();
-    	System.out.println("Enter the time between observations: ");
-    	intervalObs = input.nextInt();
-
+    	if (simMode == 1 || simMode == 2) {
+    		System.out.println("Enter the time between observations: ");
+    		intervalObs = input.nextInt();
+    	}
     }
 
     /*
-    * Simulates the population.
-    * Prints out current time, events simulated, population size, best city path per interval in time.
-    */
+     * Simulates the population.
+     * Prints out current time, events simulated, population size, best city path per interval in time.
+     */
     private static void timeMode() {
 		int newInterval = intervalObs;
 		event = eventQueue.next();
@@ -90,6 +87,7 @@ public class Simulator {
                     System.out.println("Events simulated: " + eventsSimulated);
                     System.out.println("Population size: " + population.size());
                     printBestPath();
+                    System.out.println();
                 }
             }
             event = eventQueue.next();
@@ -98,9 +96,9 @@ public class Simulator {
     }
 
     /*
-    * Simulates the population.
-    * Prints out current time, events simulated, population size, best city path per interval in number of events simulated.
-    */
+     * Simulates the population.
+     * Prints out current time, events simulated, population size, best city path per interval in number of events simulated.
+     */
 	private static void nEventsMode() {
 		int newInterval = intervalObs;
   		event = eventQueue.next();
@@ -126,6 +124,7 @@ public class Simulator {
         			System.out.println("Events simulated: " + eventsSimulated);
         			System.out.println("Population size: " + population.size());
         			printBestPath();
+        			System.out.println();
         		}
 			}
 			event = eventQueue.next();
@@ -134,9 +133,9 @@ public class Simulator {
 	}
 
     /*
-    * Simulates the population.
-    * Prints out every simulated events and in the end the best city path.
-    */
+     * Simulates the population.
+     * Prints out every simulated events and in the end the best city path.
+     */
     private static void verboseMode() {
         event = eventQueue.next();
         while (event.time() <= timeSimSize) {
@@ -165,8 +164,8 @@ public class Simulator {
     }
 
     /*
-    * Simulates the population. Prints best city path when simulation ends.
-    */
+     * Simulates the population. Prints best city path when simulation ends.
+     */
     private static void silentMode() {
         event = eventQueue.next();
 
@@ -187,15 +186,14 @@ public class Simulator {
                 	eventsSimulated++;
                     population.epidemic();
                 }
-                
             }
         }
         printBestPath();
     }
 
     /*
-    * Returns the list of cities.
-    */
+     * Returns the list of cities.
+     */
     private static City[] listOfCities() {
         cities = CityGenerator.generate();
 
@@ -224,8 +222,10 @@ public class Simulator {
         eventQueue.add(eventReproduction);
         eventQueue.add(eventDeath);
     }
+
     /*
-	 * Runs the mutation event.
+	 * Runs the mutation event. If the individual mutates, add the event to the event queue.
+	 * Otherwise add an event of which average time is divided by ten.
      */
     private static void mutationEvent() {
         eventsSimulated++;
@@ -236,38 +236,20 @@ public class Simulator {
         Event eventMutation = new Event('m', mut, event.individual());
         Event eventMutation2 = new Event('m', mut2, event.individual());
 
-        if (debug){
-            System.out.println("Individual fitness: " + population.fitness(event.individual()));
-
-            System.out.println(Math.pow(1 - population.fitness(event.individual()), 2));
-        }
         if (RandomUtils.getRandomEvent(Math.pow(1 - population.fitness(event.individual()), 2))) {
             event.individual().mutate();
-            if (debug){
-                System.out.println("Mutation 1");
-                System.out.println(event.individual().cost());
-            }
+
             hasMutated = true;
 
             if (RandomUtils.getRandomEvent(0.3)) {
 				eventsSimulated++;
                 event.individual().mutate();
-                if (debug) {
-                    System.out.println("Mutation 2");
-                    System.out.println(event.individual().cost());
-                }
 
                 if (RandomUtils.getRandomEvent(0.15)) {
                 	eventsSimulated++;
                     event.individual().mutate();
-                    if (debug) {
-                        System.out.println("Mutation 3");
-                        System.out.println(event.individual().cost());
-                    }
                 }
             }
-        } else if (debug) {
-            System.out.println("Individual did not mutate");
         }
 
         if (hasMutated) {
@@ -280,7 +262,10 @@ public class Simulator {
     }
 
     /*
-	 * Runs the reproduction event.
+	 * Runs the reproduction event. 
+	 * Adds a reproduction event in the event queue affecting the reproduced individual.
+	 * Adds mutation, reproduction and death events in the event queue
+	 * affecting the new individual in the population.
      */
     private static void reproductionEvent() {
         eventsSimulated++;
@@ -307,27 +292,19 @@ public class Simulator {
 
 
         population.add(reproducedIndividual);
-        if (debug) {
-            System.out.println("Individual reproduced fitness: " + fitCal);
-            System.out.println("New individual: " + reproducedIndividual);
-        }
     }
 
     /*
-	 * Runs the death event.
+	 * Runs the death event. If the individual survives, another death event affecting
+	 * the individual will be added to the event queue. Otherwise remove the individual
+	 * from the population.
      */
     private static void deathEvent() {
         eventsSimulated++;
         if (RandomUtils.getRandomEvent(1 - Math.pow(population.fitness(event.individual()), 2))) {
-            if (debug){
-                System.out.println("Individual dies");
-            }
             population.remove(event.individual());
         } 
         else {
-            if (debug) {
-                System.out.println("Individual did not die");
-            }
 
             Event newEventDeath = new Event('d', event.time() + (1 - Math.log(1 - population.fitness(event.individual())) * deathInterval), event.individual());
             eventQueue.add(newEventDeath);
@@ -358,11 +335,6 @@ public class Simulator {
 
                 euclideanDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-                if (debug) {
-                    System.out.println();
-                    System.out.println("Distance between " + population.bestPath()[i].name() + " and " + population.bestPath()[i + 1].name() + " is: " + euclideanDistance);
-                }
-
                 total = total + euclideanDistance;
             }	else if (i < (population.bestPath().length)) {
 
@@ -371,16 +343,8 @@ public class Simulator {
 
                 euclideanDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-                if (debug) {
-                    System.out.println();
-                    System.out.println("Distance between " + population.bestPath()[i].name() + " and " + population.bestPath()[0].name() + " is: " + euclideanDistance);
-                }
-
                 total = total + euclideanDistance;
             } 
-            else if (debug) {
-                System.out.println("The system is done calculating.");
-            }
         }
         System.out.println(" (cost: " + total + ")");
     }
@@ -393,14 +357,15 @@ public class Simulator {
             addIndividuals(eventQueue, population);
         }
         switch(simMode){
-            case tUnits: timeMode();
+            case tUnits: timeMode(); break;
 
-            case nEvents: nEventsMode();
-            
-            case verbose: verboseMode();
+            case nEvents: nEventsMode(); break;
 
-            case silent: silentMode();
+            case verbose: verboseMode(); break;
+
+            case silent: silentMode(); break;
+
+            default: System.out.println("Input to sim mode is invalid.");
         }
-     
     }
 }
